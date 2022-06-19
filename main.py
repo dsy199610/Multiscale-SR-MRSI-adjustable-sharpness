@@ -19,7 +19,7 @@ import torchvision
 from models.MUNet import MUNet
 from models.MUNet_multiresFS import MUNet_multiresFS
 from models.MUNet_multiresHN import MUNet_multiresHN
-from models.MUNet_multiresCIN import MUNet_multiresCIN
+from models.MUNet_AMLayer import MUNet_AMLayer
 from models.MUNet_multiresFS_metEm7 import MUNet_multiresFS_metEm7
 from models.MUNet_multiresFS_metEm7_adv2 import MUNet_multiresFS_metEm7_adv2
 from models.cWGAN import train_D, train_G, Discriminator
@@ -84,8 +84,8 @@ def build_model(args):
         model = MUNet_multiresFS(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
     elif args.model == 'MUNet_multiresHN':
         model = MUNet_multiresHN(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresCIN':
-        model = MUNet_multiresCIN(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
+    elif args.model == 'MUNet_AMLayer':
+        model = MUNet_AMLayer(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
     elif args.model == 'MUNet_multiresFS_metEm7':
         model = MUNet_multiresFS_metEm7(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
     elif args.model == 'MUNet_multiresFS_metEm7_adv2':

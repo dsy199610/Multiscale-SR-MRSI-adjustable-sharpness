@@ -18,10 +18,10 @@ def data_consistency(met_LR, output, lowRes):
     return output
 
 
-class MUNet_multiresCIN(nn.Module):
+class MUNet_AMLayer(nn.Module):
 
     def __init__(self, in_channels, init_features, latent_dim, out_channels=1):
-        super(MUNet_multiresCIN, self).__init__()
+        super(MUNet_AMLayer, self).__init__()
         features = init_features
         self.encoder1 = Encoder(in_channels=in_channels, init_features=features, latent_dim=latent_dim)
         self.encoder2 = Encoder(in_channels=in_channels, init_features=features, latent_dim=latent_dim)
