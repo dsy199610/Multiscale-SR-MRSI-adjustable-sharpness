@@ -10,29 +10,20 @@ import sys
 import datetime
 import time
 from torch.utils.tensorboard import SummaryWriter
-from models.cleaned9.MUNet import MUNet
-from models.cleaned9.MUNet_multiresFS import MUNet_multiresFS
-from models.cleaned9.MUNet_multiresHN import MUNet_multiresHN
-from models.cleaned9.MUNet_multiresCIN import MUNet_multiresCIN
-from models.cleaned9.MUNet_multiresFS_metEm import MUNet_multiresFS_metEm
-from models.cleaned9.MUNet_multiresFS_metEm2 import MUNet_multiresFS_metEm2
-from models.cleaned9.MUNet_multiresFS_metEm3 import MUNet_multiresFS_metEm3
-from models.cleaned9.MUNet_multiresFS_metEm4 import MUNet_multiresFS_metEm4
-from models.cleaned9.MUNet_multiresFS_metEm5 import MUNet_multiresFS_metEm5
-from models.cleaned9.MUNet_multiresFS_metEm6 import MUNet_multiresFS_metEm6
-from models.cleaned9.MUNet_multiresFS_metEm7 import MUNet_multiresFS_metEm7
-from models.cleaned9.MUNet_multiresFS_metEm7_adv import MUNet_multiresFS_metEm7_adv
-from models.cleaned9.MUNet_multiresFS_metEm7_adv2 import MUNet_multiresFS_metEm7_adv2
-from models.cleaned9.MUNet_multiresFS_adv2 import MUNet_multiresFS_adv2
-from models.cleaned9.MUNet_adv2 import MUNet_adv2
-from loader.dataloader import twoD_Data, RandomDownscale_function, RandomFlip_function, RandomShift_function, Met_Sampler
 from torch.nn import functional as F
 from pytorch_msssim import ms_ssim
 from skimage.metrics import peak_signal_noise_ratio, structural_similarity
 import matplotlib.pyplot as plt
 import torchvision
-from models.cleaned9.cWGAN import train_D, train_G, Discriminator, Discriminator_uf, Discriminator_uf_met
-from image_similarity_measures.quality_metrics import fsim
+
+from models.MUNet import MUNet
+from models.MUNet_multiresFS import MUNet_multiresFS
+from models.MUNet_multiresHN import MUNet_multiresHN
+from models.MUNet_multiresCIN import MUNet_multiresCIN
+from models.MUNet_multiresFS_metEm7 import MUNet_multiresFS_metEm7
+from models.MUNet_multiresFS_metEm7_adv2 import MUNet_multiresFS_metEm7_adv2
+from models.cWGAN import train_D, train_G, Discriminator
+from loader.dataloader import twoD_Data, RandomDownscale_function, RandomFlip_function, RandomShift_function, Met_Sampler
 
 
 def ssimloss(output, target):
@@ -95,37 +86,14 @@ def build_model(args):
         model = MUNet_multiresHN(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
     elif args.model == 'MUNet_multiresCIN':
         model = MUNet_multiresCIN(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_metEm':
-        model = MUNet_multiresFS_metEm(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_metEm2':
-        model = MUNet_multiresFS_metEm2(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_metEm3':
-        model = MUNet_multiresFS_metEm3(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_metEm4':
-        model = MUNet_multiresFS_metEm4(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_metEm5':
-        model = MUNet_multiresFS_metEm5(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_metEm6':
-        model = MUNet_multiresFS_metEm6(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
     elif args.model == 'MUNet_multiresFS_metEm7':
         model = MUNet_multiresFS_metEm7(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_metEm7_adv':
-        model = MUNet_multiresFS_metEm7_adv(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
     elif args.model == 'MUNet_multiresFS_metEm7_adv2':
         model = MUNet_multiresFS_metEm7_adv2(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_multiresFS_adv2':
-        model = MUNet_multiresFS_adv2(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
-    elif args.model == 'MUNet_adv2':
-        model = MUNet_adv2(in_channels=args.in_channels, init_features=args.init_channels, latent_dim=args.latent_dim).cuda()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, betas=(0.5, 0.9))
 
-    if args.modelD == 'Discriminator':
-        model_D = Discriminator(in_channels=args.in_channels_D, hidden_size=args.init_channels_D).cuda()
-    elif args.modelD == 'Discriminator_uf':
-        model_D = Discriminator_uf(in_channels=args.in_channels_D, hidden_size=args.init_channels_D, latent_dim=args.latent_dim).cuda()
-    elif args.modelD == 'Discriminator_uf_met':
-        model_D = Discriminator_uf_met(in_channels=args.in_channels_D, hidden_size=args.init_channels_D, latent_dim=args.latent_dim).cuda()
+    model_D = Discriminator(in_channels=args.in_channels_D, hidden_size=args.init_channels_D).cuda()
     optimizer_D = torch.optim.Adam(model_D.parameters(), lr=args.lr, betas=(0.5, 0.9))
     return model, optimizer, model_D, optimizer_D
 
@@ -157,8 +125,8 @@ def train_epoch(args, epoch, model, data_loader, optimizer, writer, model_D, opt
             #adv_weight = args.adv_weight_train[0] * 10 ** (torch.rand(1) * np.log10(args.adv_weight_train[1] / args.adv_weight_train[0]))
             adv_weight = torch.rand(1) * args.adv_weight_train[1] + args.adv_weight_train[0]
             adv_weight = adv_weight.numpy()[0]
-            #if torch.rand(1) < 0.1:
-            #    adv_weight = 0.0
+            if torch.rand(1) < 0.1:
+                adv_weight = 0.0
 
         outputs = model(T1, flair, met_LR, lowRes, lowRes, metname, adv_weight)
         nonzero_mask = (met_HR != 0).float()
@@ -184,7 +152,7 @@ def train_epoch(args, epoch, model, data_loader, optimizer, writer, model_D, opt
         loss_L1 = F.l1_loss(outputs, met_HR)
         loss_ssim = ssimloss(outputs, met_HR)
         loss = args.L1_weight * loss_L1 + args.SSIM_weight * loss_ssim + adv_weight * loss_adv
-        print(args.L1_weight, args.SSIM_weight, adv_weight, lowRes)
+        #print(args.L1_weight, args.SSIM_weight, adv_weight, lowRes)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -233,8 +201,8 @@ def valid(args, epoch, model, data_loader, writer):
                 #adv_weight = args.adv_weight_train[0] * 10 ** (torch.rand(1) * np.log10(args.adv_weight_train[1] / args.adv_weight_train[0]))
                 adv_weight = torch.rand(1) * args.adv_weight_train[1] + args.adv_weight_train[0]
                 adv_weight = adv_weight.numpy()[0]
-                #if torch.rand(1) < 0.1:
-                #    adv_weight = 0.0
+                if torch.rand(1) < 0.1:
+                    adv_weight = 0.0
 
             outputs = model(T1, flair, met_LR, lowRes, lowRes, metname, adv_weight)
             nonzero_mask = (met_HR != 0).float()
@@ -281,8 +249,8 @@ def visualize(args, epoch, model, data_loader, writer):
                 #adv_weight = args.adv_weight_train[0] * 10 ** (torch.rand(1) * np.log10(args.adv_weight_train[1] / args.adv_weight_train[0]))
                 adv_weight = torch.rand(1) * args.adv_weight_train[1] + args.adv_weight_train[0]
                 adv_weight = adv_weight.numpy()[0]
-                #if torch.rand(1) < 0.1:
-                #    adv_weight = 0.0
+                if torch.rand(1) < 0.1:
+                    adv_weight = 0.0
 
             outputs = model(T1, flair, met_LR, lowRes, lowRes, metname, adv_weight)
             nonzero_mask = (met_HR != 0).float()
@@ -369,7 +337,7 @@ def main_evaluate(args):
     model, optimizer, model_D, optimizer_D = build_model(args)
     model.load_state_dict(torch.load(args.checkpoint)['model'])
     model.eval()
-    running_psnr, running_ssim, running_fsim = [], [], []
+    running_psnr, running_ssim = [], []
     total_data = len(test_loader)
     with torch.no_grad():
         for iter, data in enumerate(test_loader):
@@ -380,12 +348,12 @@ def main_evaluate(args):
 
             met_LR, lowRes = RandomDownscale_function(met_HR, args.low_resolution_test)
 
-            start = time.time()
+            #start = time.time()
             output = model(T1, flair, met_LR, lowRes, lowRes, metname, args.adv_weight_test)
             nonzero_mask = (met_HR != 0).float()
             output = torch.mul(output, nonzero_mask)
-            end = time.time()
-            print(end - start)
+            #end = time.time()
+            #print(end - start)
 
             data_max = data_max.numpy()
             output = output.squeeze().cpu().numpy() * data_max
@@ -394,17 +362,14 @@ def main_evaluate(args):
             T1 = T1.squeeze().cpu().numpy()
             flair = flair.squeeze().cpu().numpy()
 
-            MAE = np.mean(np.absolute(output - met_HR))
             PSNR = peak_signal_noise_ratio(met_HR, output, data_range=met_HR.max() - met_HR.min())
             SSIM = structural_similarity(met_HR, output, data_range=met_HR.max() - met_HR.min())
-            FSIM = fsim(met_HR[:, :, None], output[:, :, None])
 
             running_psnr.append(PSNR.item())
             running_ssim.append(SSIM.item())
-            running_fsim.append(FSIM.item())
 
             sli = sli.numpy()
-            logging.info(f'{Patient[0]} slice={sli[0]} met={metname[0]} PSNR={PSNR} SSIM={SSIM} FSIM={FSIM} ')
+            logging.info(f'{Patient[0]} slice={sli[0]} met={metname[0]} PSNR={PSNR} SSIM={SSIM}')
 
             if metname[0] == 'Gln':
                 output_file = '%s/%s_slice%s_MRI.npz' % (
@@ -430,11 +395,9 @@ def main_evaluate(args):
 
     running_psnr = np.asarray(running_psnr)
     running_ssim = np.asarray(running_ssim)
-    running_fsim = np.asarray(running_fsim)
     logging.info('PSNR = %5g +- %5g' % (running_psnr.mean(), running_psnr.std()))
     logging.info('SSIM = %5g +- %5g' % (running_ssim.mean(), running_ssim.std()))
-    logging.info('FSIM = %5g +- %5g' % (running_fsim.mean(), running_fsim.std()))
-    np.savez(str(args.exp_dir) + '/adv' + str(args.adv_weight_test) + '_lr' + str(args.low_resolution_test) + '_metrics.npz', psnr=running_psnr, ssim=running_ssim, fsim=running_fsim)
+    np.savez(str(args.exp_dir) + '/adv' + str(args.adv_weight_test) + '_lr' + str(args.low_resolution_test) + '_metrics.npz', psnr=running_psnr, ssim=running_ssim)
 
 
 def create_arg_parser():
