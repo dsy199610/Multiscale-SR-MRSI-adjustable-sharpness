@@ -420,7 +420,8 @@ def create_arg_parser():
     ## methods
     parser.add_argument('--low-resolution-train', nargs='+', type=int, default=[8, 16], help='half of the low resolution matrix size during training')
     parser.add_argument('--low-resolution-test', type=int, default=8, help='half of the low resolution matrix size during testing')
-    parser.add_argument('--model', type=str, default='MUNet_multiresHN', choices=['MUNet', 'MUNet_AMLayer'], help='model')
+    parser.add_argument('--model', type=str, default='MUNet_FilterScaling_Met_adv', choices=['MUNet', 'MUNet_AMLayer', 'MUNet_HyperNetworks', 'MUNet_FilterScaling',
+                                                                                  'MUNet_FilterScaling_Met', 'MUNet_FilterScaling_Met_adv'], help='model')
     parser.add_argument('--modelD', type=str, default='Discriminator', choices=['Discriminator'], help='Discriminator model')
     parser.add_argument('--in-channels', type=int, default=2, help='input channels')
     parser.add_argument('--init-channels', type=int, default=8, help='initial channels')
