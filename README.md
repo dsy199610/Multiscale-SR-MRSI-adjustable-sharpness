@@ -23,3 +23,19 @@ If you use this code please cite:
  * pytorch-msssim 0.2.1
  * torchvision 0.3.0
  * numpy 1.19.2
+
+### Directory
+    main.py                             # main file for training and evaluation
+    loader
+    └──  dataloader.py                  # dataloader
+    utils
+    ├──logs.py                          # logging
+    └──utils.py                         # utility files
+    models
+    ├──MUNet.py                         # single-scale network
+    ├──MUNet_AMLayer.py                 # AMLayer
+    ├──MUNet_HyperNetworks.py           # HyperNetworks
+    ├──MUNet_FilterScaling.py           # Filter Scaling
+    ├──MUNet_FilterScaling_Met.py       # Filter Scaling with Met
+    ├──MUNet_FilterScaling_Met_adv.py   # Filter Scaling with Met + adjustable sharpness
+    └──cWGAN.py                         # functions for training cWGAN
